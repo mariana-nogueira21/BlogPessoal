@@ -8,8 +8,10 @@ import org.generation.blogPessoal.model.UserLogin;
 import org.generation.blogPessoal.model.Usuario;
 import org.generation.blogPessoal.repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 @Service
 public class UsuarioService {
@@ -17,12 +19,22 @@ public class UsuarioService {
 	@Autowired
 	private UsuarioRepository repository;
 
-	public Usuario CadastrarUsuario(Usuario usuario) {
+	public Optional<Usuario> cadastrarUsuario(Usuario usuario) {
+
+		if (repository.findByUsuario(usuario.getUsuario()).isPresent())
+			return Optional.empty();
+
+		usuario.setSenha(criptografarSenha(usuario.getSenha()));
+
+		return Optional.of(repository.save(usuario));
+
+	}
+
+	private String criptografarSenha(String senha) {
+
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
-		String senhaEncoder = encoder.encode(usuario.getSenha());
-
-		return repository.save(usuario);
+		return encoder.encode(senha);
 	}
 
 	public Optional<UserLogin> Logar(Optional<UserLogin> user) {
@@ -38,6 +50,7 @@ public class UsuarioService {
 
 				user.get().setToken(authHeader);
 				user.get().setNome(usuario.get().getNome());
+				user.get().setSenha(usuario.get().getSenha());
 
 				return user;
 			}
@@ -45,4 +58,26 @@ public class UsuarioService {
 
 		return null;
 	}
+	
+public Optional<Usuario> atualizarUsuario(Usuario usuario) {
+
+		
+		if(repository.findById(usuario.getId()).isPresent()) {
+			
+			Optional<Usuario> buscaUsuario = repository.findByUsuario(usuario.getUsuario());
+			
+			if ( (buscaUsuario.isPresent()) && ( buscaUsuario.get().getId() != usuario.getId()))
+				throw new ResponseStatusException(
+						HttpStatus.BAD_REQUEST, "Usuário já existe!", null);
+			
+			usuario.setSenha(criptografarSenha(usuario.getSenha()));
+
+			return Optional.ofNullable(repository.save(usuario));
+			
+		}
+		
+			return Optional.empty();
+	
+	}
+	
 }
