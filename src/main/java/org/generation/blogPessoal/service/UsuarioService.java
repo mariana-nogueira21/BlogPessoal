@@ -20,24 +20,27 @@ public class UsuarioService {
 	private UsuarioRepository repository;
 
 	public Optional<Usuario> cadastrarUsuario(Usuario usuario) {
-
 		if (repository.findByUsuario(usuario.getUsuario()).isPresent())
-			return Optional.empty();
-
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário já existe!", null);
 		usuario.setSenha(criptografarSenha(usuario.getSenha()));
-
 		return Optional.of(repository.save(usuario));
-
 	}
 
-	private String criptografarSenha(String senha) {
 
-		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-
-		return encoder.encode(senha);
+	public Optional<Usuario> atualizarUsuario(Usuario usuario) {
+		if (repository.findById(usuario.getId()).isPresent()) {
+			Optional<Usuario> buscaUsuario = repository.findByUsuario(usuario.getUsuario());
+			if (buscaUsuario.isPresent()) {
+				if (buscaUsuario.get().getId() != usuario.getId())
+					throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário já existe!", null);
+			}
+			usuario.setSenha(criptografarSenha(usuario.getSenha()));
+			return Optional.of(repository.save(usuario));
+		}
+		throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Usuário não encontrado!", null);
 	}
-
-	public Optional<UserLogin> Logar(Optional<UserLogin> user) {
+	
+	public Optional<UserLogin> logarUsuario(Optional<UserLogin> user) {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		Optional<Usuario> usuario = repository.findByUsuario(user.get().getUsuario());
 
@@ -49,8 +52,10 @@ public class UsuarioService {
 				String authHeader = "Basic " + new String(encodeAuth);
 
 				user.get().setToken(authHeader);
+				user.get().setId(usuario.get().getId());
 				user.get().setNome(usuario.get().getNome());
-				user.get().setSenha(usuario.get().getSenha());
+				user.get().setFoto(usuario.get().getFoto());
+				user.get().setTipo(usuario.get().getTipo());
 
 				return user;
 			}
@@ -59,25 +64,10 @@ public class UsuarioService {
 		return null;
 	}
 	
-public Optional<Usuario> atualizarUsuario(Usuario usuario) {
-
-		
-		if(repository.findById(usuario.getId()).isPresent()) {
-			
-			Optional<Usuario> buscaUsuario = repository.findByUsuario(usuario.getUsuario());
-			
-			if ( (buscaUsuario.isPresent()) && ( buscaUsuario.get().getId() != usuario.getId()))
-				throw new ResponseStatusException(
-						HttpStatus.BAD_REQUEST, "Usuário já existe!", null);
-			
-			usuario.setSenha(criptografarSenha(usuario.getSenha()));
-
-			return Optional.ofNullable(repository.save(usuario));
-			
-		}
-		
-			return Optional.empty();
-	
+	private String criptografarSenha(String senha) {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		String senhaEncoder = encoder.encode(senha);
+		return senhaEncoder;
 	}
-	
+		
 }

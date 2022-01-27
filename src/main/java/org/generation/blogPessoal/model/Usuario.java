@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -22,30 +24,35 @@ public class Usuario {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 	
-	@NotNull
-	@Size(min = 2, max = 100)
+	@NotNull(message = "O atributo Nome é Obrigatório!")
 	private String nome;
 	
-	@NotNull
-	@Size(min = 5, max = 100)
+	@NotNull(message = "O atributo Usuário é Obrigatório!")
+	@Email(message = "O atributo Usuário deve ser um email válido!")
 	private String usuario;
 	
-	@NotNull
-	@Size(min = 5, max = 100)
+	@NotBlank(message = "O atributo Senha é Obrigatório!")
+	@Size(min = 8, message = "A Senha deve ter no mínimo 8 caracteres")
 	private String senha;
 	
-	@OneToMany (mappedBy = "usuario", cascade = CascadeType.ALL)
+	@Size(max = 5000, message = "O link da foto não pode ser maior do que 5000 caractéres")
+	private String foto;
+	
+	private String tipo;
+	
+	@OneToMany (mappedBy = "usuario", cascade = CascadeType.REMOVE)
 	@JsonIgnoreProperties ("usuario")
-	private List <Postagem> postagem;
+	private List<Postagem> postagem;
 
 
 	public Usuario() {}
 	
-	public Usuario(long id, String nome, String usuario, String senha) {
+	public Usuario(long id, String nome, String usuario, String senha, String foto) {
 		this.id = id;
 		this.nome = nome;
 		this.usuario = usuario;
 		this.senha = senha;
+		this.foto = foto;
 	}
 
 	public long getId() {
@@ -80,4 +87,19 @@ public class Usuario {
 		this.senha = senha;
 	}
 		
+	public String getFoto() {
+		return foto;
+	}
+	
+	public void setFoto(String foto) {
+		this.foto = foto;
+	}
+	
+	public String getTipo() {
+		return tipo;
+	}
+	
+	public void setTipo(String tipo) {
+		this.tipo = tipo;
+	}
 }
