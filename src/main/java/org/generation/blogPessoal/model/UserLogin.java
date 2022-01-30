@@ -15,11 +15,11 @@ public class UserLogin {
 	private String foto;
 	
 	private String tipo;
-	
+
 	public long getId() {
 		return id;
 	}
-	
+
 	public void setId(long id) {
 		this.id = id;
 	}
@@ -71,5 +71,5 @@ public class UserLogin {
 	public void setTipo(String tipo) {
 		this.tipo = tipo;
 	}
-	
+		
 }
