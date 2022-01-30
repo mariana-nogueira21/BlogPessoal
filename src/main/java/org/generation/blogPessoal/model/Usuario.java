@@ -22,15 +22,15 @@ public class Usuario {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
-	
+	private Long id;
+
 	@NotNull(message = "O atributo Nome é Obrigatório!")
 	private String nome;
 	
 	@NotNull(message = "O atributo Usuário é Obrigatório!")
 	@Email(message = "O atributo Usuário deve ser um email válido!")
 	private String usuario;
-	
+
 	@NotBlank(message = "O atributo Senha é Obrigatório!")
 	@Size(min = 8, message = "A Senha deve ter no mínimo 8 caracteres")
 	private String senha;
@@ -40,8 +40,8 @@ public class Usuario {
 	
 	private String tipo;
 	
-	@OneToMany (mappedBy = "usuario", cascade = CascadeType.REMOVE)
-	@JsonIgnoreProperties ("usuario")
+	@OneToMany(mappedBy = "usuario", cascade = CascadeType.REMOVE)
+	@JsonIgnoreProperties("usuario")
 	private List<Postagem> postagem;
 
 
@@ -55,11 +55,11 @@ public class Usuario {
 		this.foto = foto;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
-	public void setId(long id) {
+	public void setId(Long id) {
 		this.id = id;
 	}
 
