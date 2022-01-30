@@ -28,55 +28,55 @@ import org.springframework.web.server.ResponseStatusException;
 @RequestMapping("/usuarios")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UsuarioController {
-	
+
 	@Autowired
-	private UsuarioService usuarioService;
-	
+	private UsuarioService service;
+
 	@Autowired
-	private UsuarioRepository usuarioRepository;
+	private UsuarioRepository repository;
 
 	@GetMapping("/all")
-	public ResponseEntity <List<Usuario>> getAll(){
-		return ResponseEntity.ok(usuarioRepository.findAll());
+	public ResponseEntity <List<Usuario>> getAll() {
+		return ResponseEntity.ok(repository.findAll());
 	}
-	
+
 	@GetMapping("/{id}")
 	public ResponseEntity<Usuario> getById(@PathVariable long id) {
-		return usuarioRepository.findById(id)
+		return repository.findById(id)
 			.map(resp -> ResponseEntity.ok(resp))
 			.orElse(ResponseEntity.notFound().build());
 	}
-	
+
 	@PostMapping("/logar")
-	public ResponseEntity<UserLogin> Autentication(@RequestBody Optional<UserLogin> user) {
-		return usuarioService.logarUsuario(user)
-				.map(resp -> ResponseEntity.ok(resp))
-				.orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());	
+	public ResponseEntity<UserLogin> autenticationUsuario(@RequestBody Optional<UserLogin> usuario) {
+		return service.logarUsuario(usuario)
+			.map(resp -> ResponseEntity.ok(resp))
+			.orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
 	}
-	
+
 	@PostMapping("/cadastrar")
-	public ResponseEntity<Usuario> postUsuario(@Valid @RequestBody Usuario usuario){
-		return usuarioService.cadastrarUsuario(usuario)
-			.map(resposta -> ResponseEntity.status(HttpStatus.CREATED).body(resposta))
+	public ResponseEntity<Usuario> postUsuario(@Valid @RequestBody Usuario usuario) {
+		return service.cadastrarUsuario(usuario)
+			.map(resp -> ResponseEntity.status(HttpStatus.CREATED).body(resp))
 			.orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
 	}
-	
+
 	@PutMapping("/atualizar")
 	public ResponseEntity<Usuario> putUsuario(@Valid @RequestBody Usuario usuario){
-		return usuarioService.atualizarUsuario(usuario)
-			.map(resposta -> ResponseEntity.status(HttpStatus.OK).body(resposta))
-			.orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+		return service.atualizarUsuario(usuario)
+			.map(resp -> ResponseEntity.status(HttpStatus.OK).body(resp))
+			.orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
 	}
-	
+
 	@ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void delete(@PathVariable long id) {
-        Optional<Usuario> usuario = usuarioRepository.findById(id);
+        Optional<Usuario> usuario = repository.findById(id);
 
         if(usuario.isEmpty())
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST);
 
-        usuarioRepository.deleteById(id);
+        repository.deleteById(id);
     }
 	
 }

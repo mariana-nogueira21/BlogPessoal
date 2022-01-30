@@ -42,23 +42,23 @@ public class TemaController {
 	}
 	
 	@GetMapping("/nome/{nome}")
-	public ResponseEntity<List<Tema>> getByName(@PathVariable String nome) {
+	public ResponseEntity<List<Tema>> getByNome(@PathVariable String nome) {
 		return ResponseEntity.ok(repository.findAllByDescricaoContainingIgnoreCase(nome));
 	}
 	
 	@GetMapping("/descricao/{descricao}")
-	public ResponseEntity<List<Tema>> getByTitle(@PathVariable String descricao){
+	public ResponseEntity<List<Tema>> getByTitulo(@PathVariable String descricao){
 		return ResponseEntity.ok(repository.findAllByDescricaoContainingIgnoreCase(descricao));
 	}
 	
 	@PostMapping
-	public ResponseEntity<Tema> post (@Valid @RequestBody Tema tema) {
+	public ResponseEntity<Tema> post(@Valid @RequestBody Tema tema) {
 		return ResponseEntity.status(HttpStatus.CREATED)
 				.body(repository.save(tema));
 	}
 	
 	@PutMapping
-	public ResponseEntity<Tema> put (@Valid @RequestBody Tema tema) {
+	public ResponseEntity<Tema> put(@Valid @RequestBody Tema tema) {
 		return repository.findById(tema.getId())
 				.map(resp -> ResponseEntity.status(HttpStatus.CREATED).body(repository.save(tema)))
 				.orElse(ResponseEntity.status(HttpStatus.BAD_REQUEST).build());
@@ -66,7 +66,7 @@ public class TemaController {
 	
 	@ResponseStatus(HttpStatus.NO_CONTENT)
 	@DeleteMapping("/{id}")
-	public void delete (@PathVariable long id) {
+	public void delete(@PathVariable long id) {
 		Optional<Tema> tema = repository.findById(id);
 		if(tema.isEmpty())
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST);

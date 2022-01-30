@@ -13,7 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 
 @EnableWebSecurity
-public class BasicSecurityConfig extends WebSecurityConfigurerAdapter{
+public class BasicSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	private @Autowired UserDetailsServiceImpl service;
 
@@ -27,7 +27,7 @@ public class BasicSecurityConfig extends WebSecurityConfigurerAdapter{
 
 		auth.userDetailsService(service);
 
-		auth.inMemoryAuthentication().withUser("boaz").password(passwordEncoder().encode("boaz"))
+		auth.inMemoryAuthentication().withUser("mari").password(passwordEncoder().encode("mari"))
 				.authorities("ROLE_ADMIN");
 	}
 
@@ -42,4 +42,5 @@ public class BasicSecurityConfig extends WebSecurityConfigurerAdapter{
 			.and().cors()
 			.and().csrf().disable();
 	}
+
 }
